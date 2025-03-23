@@ -24,25 +24,26 @@ scaler = joblib.load(scaler_filename)
 st.title("🩺 Diabetes Prediction AI Model")
 st.write("Enter your details to check diabetes risk.")
 
-# User Inputs
-pregnancies = st.number_input("Pregnancies", 0, 20, 1)
-glucose = st.number_input("Glucose Level", 0, 300, 120)
-bp = st.number_input("Blood Pressure", 0, 200, 70)
-skin_thickness = st.number_input("Skin Thickness", 0, 100, 20)
-insulin = st.number_input("Insulin Level", 0, 900, 79)
-bmi = st.number_input("BMI", 0.0, 70.0, 25.0)
-dpf = st.number_input("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
+# User Inputs (Updated Features)
+gender = st.selectbox("Gender", ["Male", "Female"])
 age = st.number_input("Age", 1, 120, 30)
-hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)  # Added missing feature
+hypertension = st.selectbox("Hypertension (0 = No, 1 = Yes)", [0, 1])
+heart_disease = st.selectbox("Heart Disease (0 = No, 1 = Yes)", [0, 1])
+smoking_history = st.selectbox("Smoking History", ["Never", "Former Smoker", "Current Smoker"])
+bmi = st.number_input("BMI", 0.0, 70.0, 25.0)
+hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)
+blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
+
+# Convert categorical values to numerical (if needed)
+gender = 1 if gender == "Male" else 0  # Example encoding
+smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
+smoking_history = smoking_dict[smoking_history]
 
 # Define expected feature names
-feature_names = [
-    "Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", 
-    "BMI", "DiabetesPedigreeFunction", "Age", "HbA1c_Level"
-]
+feature_names = ["gender", "age", "hypertension", "heart_disease", "smoking_history", "bmi", "HbA1c_level", "blood_glucose_level"]
 
-# Create DataFrame with feature names
-input_df = pd.DataFrame([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age, hba1c]], 
+# Create DataFrame
+input_df = pd.DataFrame([[gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c, blood_glucose]], 
                         columns=feature_names)
 
 # Debugging: Check Feature Mismatch
