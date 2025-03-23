@@ -2,14 +2,23 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
+import urllib.request
 
-# Load Model and Scaler from GitHub (Use Raw URLs)
+# Load Model and Scaler from GitHub (First Download, Then Load)
 model_url = "https://raw.githubusercontent.com/MTA-10/Trail-projects/main/diabetes_model.pkl"
 scaler_url = "https://raw.githubusercontent.com/MTA-10/Trail-projects/main/preprocessor.pkl"
 
-# Download and Load Model & Scaler
-model = joblib.load(model_url)
-scaler = joblib.load(scaler_url)
+# Define local filenames
+model_filename = "diabetes_model.pkl"
+scaler_filename = "preprocessor.pkl"
+
+# Download files first
+urllib.request.urlretrieve(model_url, model_filename)
+urllib.request.urlretrieve(scaler_url, scaler_filename)
+
+# Load Model & Scaler from local files
+model = joblib.load(model_filename)
+scaler = joblib.load(scaler_filename)
 
 # Streamlit App
 st.title("🩺 Diabetes Prediction AI Model")
