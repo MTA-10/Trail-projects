@@ -59,11 +59,13 @@ input_data = np.array(input_data, dtype=np.float64).reshape(1, -1)
 input_df = pd.DataFrame(input_data, columns=feature_names)
 
 # 🛑 Debugging Step: Show Data Types
-st.write("🔍 Input Data Types:", input_df.dtypes)
+st.write("🔍 Input Data Types:")
+st.dataframe(input_df.dtypes)
 
-# 🛑 Check for Missing/Invalid Values
-if input_df.isnull().values.any():
-    st.error(f"⚠️ Invalid input detected! Check values: \n{input_df.isnull().sum()}")
+# 🔹 Check if input DataFrame matches expected features
+expected_features = scaler.feature_names_in_
+if list(input_df.columns) != list(expected_features):
+    st.error(f"⚠️ Feature mismatch! Expected: {expected_features.tolist()} \nReceived: {input_df.columns.tolist()}")
 else:
     try:
         # 🔹 Transform input using the pre-loaded scaler
@@ -71,7 +73,7 @@ else:
 
         # 🔍 Debugging: Show transformed input data
         st.write("🔍 Processed Input Data:")
-        st.dataframe(pd.DataFrame(input_transformed, columns=feature_names))
+        st.dataframe(pd.DataFrame(input_transformed, columns=expected_features))
 
         # ✅ Predict when button is clicked
         if st.button("Predict"):
