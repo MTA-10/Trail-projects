@@ -4,19 +4,16 @@ import joblib
 import numpy as np
 import urllib.request
 
-# Load Model and Scaler from GitHub (First Download, Then Load)
+# Load Model and Scaler from GitHub
 model_url = "https://raw.githubusercontent.com/MTA-10/Trail-projects/main/diabetes_model.pkl"
 scaler_url = "https://raw.githubusercontent.com/MTA-10/Trail-projects/main/preprocessor.pkl"
 
-# Define local filenames
 model_filename = "diabetes_model.pkl"
 scaler_filename = "preprocessor.pkl"
 
-# Download files first
 urllib.request.urlretrieve(model_url, model_filename)
 urllib.request.urlretrieve(scaler_url, scaler_filename)
 
-# Load Model & Scaler from local files
 model = joblib.load(model_filename)
 scaler = joblib.load(scaler_filename)
 
@@ -24,7 +21,7 @@ scaler = joblib.load(scaler_filename)
 st.title("🩺 Diabetes Prediction AI Model")
 st.write("Enter your details to check diabetes risk.")
 
-# User Inputs (Updated Features)
+# User Inputs
 gender = st.selectbox("Gender", ["Female", "Male", "Other"])
 age = st.number_input("Age", 1, 120, 30)
 hypertension = st.selectbox("Hypertension (0 = No, 1 = Yes)", [0, 1])
@@ -34,40 +31,45 @@ bmi = st.number_input("BMI", 0.0, 70.0, 25.0)
 hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)
 blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
 
-# One-Hot Encode Gender
-gender_male = 1 if gender == "Male" else 0
-gender_other = 1 if gender == "Other" else 0
-
-# Convert categorical values to numerical
+# 🔹 Convert categorical values to match training data
 smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
 smoking_history = smoking_dict[smoking_history]
 
-# Define expected feature names
+# 🔹 One-Hot Encode Gender (ensure correct format)
+gender_male = 1 if gender == "Male" else 0
+gender_other = 1 if gender == "Other" else 0
+
+# 🔹 Define feature names & match model's input order
 feature_names = ['age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 
                  'HbA1c_level', 'blood_glucose_level', 'gender_Male', 'gender_Other']
 
-# Create DataFrame (Match Model's Expected Input Format)
+# 🔹 Create DataFrame with the correct format
 input_df = pd.DataFrame([[age, hypertension, heart_disease, smoking_history, bmi, hba1c, 
                           blood_glucose, gender_male, gender_other]], 
                         columns=feature_names)
 
-# **Fix: Ensure all values are numeric**
-input_df = input_df.astype(float)  # Convert entire DataFrame to float
+# 🔹 Convert all to numeric (fix NaN issues)
+input_df = input_df.apply(pd.to_numeric, errors='coerce')
 
-# Debugging: Check Feature Mismatch
+# 🔹 Debugging: Check Feature Mismatch
 st.write(f"🔍 Input data shape: {input_df.shape}")
-st.write(f"🔍 Scaler expected input shape: {scaler.n_features_in_}")
 st.write(f"🔍 Expected feature names: {scaler.feature_names_in_}")
 
-# Ensure input data has correct features
-if list(input_df.columns) != list(scaler.feature_names_in_):
-    st.error("⚠️ Feature mismatch! Column names do not match the expected ones.")
-else:
-    # Normalize input
+# **Fix: Ensure categorical features match training categories**
+for col in input_df.columns:
+    if col in scaler.feature_names_in_:
+        if input_df[col].isnull().any():
+            st.error(f"⚠️ Column {col} contains unexpected missing values!")
+
+# **Transform input & Predict**
+try:
     input_transformed = scaler.transform(input_df)
 
-    # Predict Button
     if st.button("Predict"):
         prediction = model.predict(input_transformed)
         result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
         st.success(f"🩺 Prediction: **{result}**")
+
+except Exception as e:
+    st.error(f"🚨 Transformation Error: {str(e)}")
+
