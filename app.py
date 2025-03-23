@@ -48,25 +48,21 @@ input_df = pd.DataFrame([[age, hypertension, heart_disease, smoking_history, bmi
                           blood_glucose, gender_male, gender_other]], 
                         columns=feature_names)
 
-# 🔹 Convert all to numeric (fix NaN issues)
-input_df = input_df.apply(pd.to_numeric, errors='coerce')
+# 🔹 Convert all columns to float (Ensures everything is numeric)
+input_df = input_df.astype('float64')
 
 # 🔹 Check for NaN values (which can cause the isnan error)
 if input_df.isnull().values.any():
     st.error("⚠️ Input contains missing or invalid values. Please check your inputs!")
+else:
+    # **Transform input & Predict**
+    try:
+        input_transformed = scaler.transform(input_df)  # Normalize input
 
-# 🔹 Debugging: Check Feature Mismatch
-st.write(f"🔍 Input data shape: {input_df.shape}")
-st.write(f"🔍 Expected feature names: {scaler.feature_names_in_}")
+        if st.button("Predict"):
+            prediction = model.predict(input_transformed)
+            result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
+            st.success(f"🩺 Prediction: **{result}**")
 
-# **Transform input & Predict**
-try:
-    input_transformed = scaler.transform(input_df)
-
-    if st.button("Predict"):
-        prediction = model.predict(input_transformed)
-        result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
-        st.success(f"🩺 Prediction: **{result}**")
-
-except Exception as e:
-    st.error(f"🚨 Transformation Error: {str(e)}")
+    except Exception as e:
+        st.error(f"🚨 Transformation Error: {str(e)}")
