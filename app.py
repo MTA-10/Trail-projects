@@ -35,23 +35,29 @@ blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
 smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
 smoking_history = smoking_dict.get(smoking_history, 0)  # Default to 0 if unexpected value
 
-# 🔹 One-Hot Encode Gender
+# 🔹 One-Hot Encode Gender (No need for gender_Female, it's inferred)
 gender_male = 1 if gender == "Male" else 0
 gender_other = 1 if gender == "Other" else 0
 
-# 🔹 Define feature names (Ensure Correct Order)
+# 🔹 Define feature names (Ensure Correct Order, EXCLUDING diabetes column)
 feature_names = [
     'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi',
     'HbA1c_level', 'blood_glucose_level', 'gender_Male', 'gender_Other'
 ]
 
 # 🔹 Create DataFrame with Correct Format
-input_df = pd.DataFrame([[
+input_data = [
     age, hypertension, heart_disease, smoking_history, bmi, hba1c, blood_glucose, gender_male, gender_other
-]], columns=feature_names)
+]
 
-# 🔹 Convert all columns to float64 (Ensure numeric format)
-input_df = input_df.apply(pd.to_numeric, errors='coerce')
+# 🔹 Convert all values to float64 to avoid dtype issues
+input_data = [float(value) for value in input_data]  # Explicitly convert to float
+
+# 🔹 Create DataFrame
+input_df = pd.DataFrame([input_data], columns=feature_names)
+
+# 🛑 Debugging Step: Print Data Types
+st.write("🔍 Input Data Types:", input_df.dtypes)
 
 # 🛑 Check for Missing/Invalid Values
 if input_df.isnull().values.any():
