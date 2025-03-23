@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # GitHub raw file URL (Replace with your actual link)
-url = "https://raw.githubusercontent.com/your-username/your-repository/main/data.csv"
+url = "https://raw.githubusercontent.com/MTA-10/Trail-projects/refs/heads/main/diabetes_prediction_dataset.csv"
 
 # Function to load dataset
 @st.cache_data
