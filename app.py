@@ -36,10 +36,19 @@ age = st.number_input("Age", 1, 120, 30)
 
 # Prepare Data for Prediction
 input_data = np.array([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age]])
-input_data = scaler.transform(input_data)  # Normalize Input
 
-# Predict Button
-if st.button("Predict"):
-    prediction = model.predict(input_data)
-    result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
-    st.success(f"🩺 Prediction: **{result}**")
+# Debugging: Check Feature Mismatch
+st.write(f"🔍 Input data shape: {input_data.shape}")
+st.write(f"🔍 Scaler expected input shape: {scaler.n_features_in_}")
+
+# Ensure input_data has the correct number of features
+if input_data.shape[1] != scaler.n_features_in_:
+    st.error(f"Feature mismatch! Expected {scaler.n_features_in_} features, but got {input_data.shape[1]}")
+else:
+    input_data = scaler.transform(input_data)  # Normalize Input
+
+    # Predict Button
+    if st.button("Predict"):
+        prediction = model.predict(input_data)
+        result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
+        st.success(f"🩺 Prediction: **{result}**")
