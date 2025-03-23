@@ -4,8 +4,8 @@ import joblib
 import numpy as np
 
 # Load Model and Scaler from GitHub (Use Raw URLs)
-model_url = "https://raw.githubusercontent.com/your-username/your-repository/main/diabetes_model.pkl"
-scaler_url = "https://raw.githubusercontent.com/your-username/your-repository/main/scaler.pkl"
+model_url = "https://github.com/MTA-10/Trail-projects/raw/refs/heads/main/diabetes_model.pkl"
+scaler_url = "https://github.com/MTA-10/Trail-projects/raw/refs/heads/main/preprocessor.pkl"
 
 # Download and Load Model & Scaler
 model = joblib.load(model_url)
