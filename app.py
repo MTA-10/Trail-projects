@@ -33,9 +33,10 @@ insulin = st.number_input("Insulin Level", 0, 900, 79)
 bmi = st.number_input("BMI", 0.0, 70.0, 25.0)
 dpf = st.number_input("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
 age = st.number_input("Age", 1, 120, 30)
+hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)  # Added missing feature
 
 # Prepare Data for Prediction
-input_data = np.array([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age]])
+input_data = np.array([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age, hba1c]])
 
 # Debugging: Check Feature Mismatch
 st.write(f"🔍 Input data shape: {input_data.shape}")
