@@ -35,21 +35,30 @@ dpf = st.number_input("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
 age = st.number_input("Age", 1, 120, 30)
 hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)  # Added missing feature
 
-# Prepare Data for Prediction
-input_data = np.array([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age, hba1c]])
+# Define expected feature names
+feature_names = [
+    "Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", 
+    "BMI", "DiabetesPedigreeFunction", "Age", "HbA1c_Level"
+]
+
+# Create DataFrame with feature names
+input_df = pd.DataFrame([[pregnancies, glucose, bp, skin_thickness, insulin, bmi, dpf, age, hba1c]], 
+                        columns=feature_names)
 
 # Debugging: Check Feature Mismatch
-st.write(f"🔍 Input data shape: {input_data.shape}")
+st.write(f"🔍 Input data shape: {input_df.shape}")
 st.write(f"🔍 Scaler expected input shape: {scaler.n_features_in_}")
+st.write(f"🔍 Expected feature names: {scaler.feature_names_in_}")
 
-# Ensure input_data has the correct number of features
-if input_data.shape[1] != scaler.n_features_in_:
-    st.error(f"Feature mismatch! Expected {scaler.n_features_in_} features, but got {input_data.shape[1]}")
+# Ensure input data has correct features
+if list(input_df.columns) != list(scaler.feature_names_in_):
+    st.error("⚠️ Feature mismatch! Column names do not match the expected ones.")
 else:
-    input_data = scaler.transform(input_data)  # Normalize Input
+    # Normalize input
+    input_transformed = scaler.transform(input_df)
 
     # Predict Button
     if st.button("Predict"):
-        prediction = model.predict(input_data)
+        prediction = model.predict(input_transformed)
         result = "Diabetic" if prediction[0] == 1 else "Not Diabetic"
         st.success(f"🩺 Prediction: **{result}**")
