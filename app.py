@@ -33,7 +33,7 @@ blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
 
 # 🔹 Convert categorical values to match training data
 smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
-smoking_history = smoking_dict[smoking_history]
+smoking_history = smoking_dict.get(smoking_history, 0)  # Default to 0 if unexpected value
 
 # 🔹 One-Hot Encode Gender (ensure correct format)
 gender_male = 1 if gender == "Male" else 0
@@ -51,15 +51,13 @@ input_df = pd.DataFrame([[age, hypertension, heart_disease, smoking_history, bmi
 # 🔹 Convert all to numeric (fix NaN issues)
 input_df = input_df.apply(pd.to_numeric, errors='coerce')
 
+# 🔹 Check for NaN values (which can cause the isnan error)
+if input_df.isnull().values.any():
+    st.error("⚠️ Input contains missing or invalid values. Please check your inputs!")
+
 # 🔹 Debugging: Check Feature Mismatch
 st.write(f"🔍 Input data shape: {input_df.shape}")
 st.write(f"🔍 Expected feature names: {scaler.feature_names_in_}")
-
-# **Fix: Ensure categorical features match training categories**
-for col in input_df.columns:
-    if col in scaler.feature_names_in_:
-        if input_df[col].isnull().any():
-            st.error(f"⚠️ Column {col} contains unexpected missing values!")
 
 # **Transform input & Predict**
 try:
@@ -72,4 +70,3 @@ try:
 
 except Exception as e:
     st.error(f"🚨 Transformation Error: {str(e)}")
-
