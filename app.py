@@ -51,6 +51,9 @@ input_df = pd.DataFrame([[age, hypertension, heart_disease, smoking_history, bmi
                           blood_glucose, gender_male, gender_other]], 
                         columns=feature_names)
 
+# **Fix: Ensure all values are numeric**
+input_df = input_df.astype(float)  # Convert entire DataFrame to float
+
 # Debugging: Check Feature Mismatch
 st.write(f"🔍 Input data shape: {input_df.shape}")
 st.write(f"🔍 Scaler expected input shape: {scaler.n_features_in_}")
