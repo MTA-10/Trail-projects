@@ -35,28 +35,30 @@ blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
 smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
 smoking_history = smoking_dict.get(smoking_history, 0)  # Default to 0 if unexpected value
 
-# 🔹 One-Hot Encode Gender (No need for gender_Female, it's inferred)
+# 🔹 One-Hot Encode Gender (Explicit Female Column)
+gender_female = 1 if gender == "Female" else 0
 gender_male = 1 if gender == "Male" else 0
 gender_other = 1 if gender == "Other" else 0
 
-# 🔹 Define feature names (Ensure Correct Order, EXCLUDING diabetes column)
+# 🔹 Define feature names (Ensure Correct Order)
 feature_names = [
     'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi',
-    'HbA1c_level', 'blood_glucose_level', 'gender_Male', 'gender_Other'
+    'HbA1c_level', 'blood_glucose_level', 'gender_Female', 'gender_Male', 'gender_Other'
 ]
 
 # 🔹 Create DataFrame with Correct Format
 input_data = [
-    age, hypertension, heart_disease, smoking_history, bmi, hba1c, blood_glucose, gender_male, gender_other
+    age, hypertension, heart_disease, smoking_history, bmi, hba1c, 
+    blood_glucose, gender_female, gender_male, gender_other
 ]
 
-# 🔹 Convert all values to float64 to avoid dtype issues
-input_data = [float(value) for value in input_data]  # Explicitly convert to float
+# 🔹 Convert values to float64 to prevent ufunc isnan errors
+input_data = np.array(input_data, dtype=np.float64).reshape(1, -1)
 
 # 🔹 Create DataFrame
-input_df = pd.DataFrame([input_data], columns=feature_names)
+input_df = pd.DataFrame(input_data, columns=feature_names)
 
-# 🛑 Debugging Step: Print Data Types
+# 🛑 Debugging Step: Show Data Types
 st.write("🔍 Input Data Types:", input_df.dtypes)
 
 # 🛑 Check for Missing/Invalid Values
@@ -67,7 +69,7 @@ else:
         # 🔹 Transform input using the pre-loaded scaler
         input_transformed = scaler.transform(input_df)
 
-        # 🔍 Debugging: Show processed input data
+        # 🔍 Debugging: Show transformed input data
         st.write("🔍 Processed Input Data:")
         st.dataframe(pd.DataFrame(input_transformed, columns=feature_names))
 
