@@ -25,7 +25,7 @@ st.title("🩺 Diabetes Prediction AI Model")
 st.write("Enter your details to check diabetes risk.")
 
 # User Inputs (Updated Features)
-gender = st.selectbox("Gender", ["Male", "Female"])
+gender = st.selectbox("Gender", ["Female", "Male", "Other"])
 age = st.number_input("Age", 1, 120, 30)
 hypertension = st.selectbox("Hypertension (0 = No, 1 = Yes)", [0, 1])
 heart_disease = st.selectbox("Heart Disease (0 = No, 1 = Yes)", [0, 1])
@@ -34,16 +34,21 @@ bmi = st.number_input("BMI", 0.0, 70.0, 25.0)
 hba1c = st.number_input("HbA1c Level", 3.0, 15.0, 5.7)
 blood_glucose = st.number_input("Blood Glucose Level", 50, 300, 100)
 
-# Convert categorical values to numerical (if needed)
-gender = 1 if gender == "Male" else 0  # Example encoding
+# One-Hot Encode Gender
+gender_male = 1 if gender == "Male" else 0
+gender_other = 1 if gender == "Other" else 0
+
+# Convert categorical values to numerical
 smoking_dict = {"Never": 0, "Former Smoker": 1, "Current Smoker": 2}
 smoking_history = smoking_dict[smoking_history]
 
 # Define expected feature names
-feature_names = ["gender", "age", "hypertension", "heart_disease", "smoking_history", "bmi", "HbA1c_level", "blood_glucose_level"]
+feature_names = ['age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 
+                 'HbA1c_level', 'blood_glucose_level', 'gender_Male', 'gender_Other']
 
-# Create DataFrame
-input_df = pd.DataFrame([[gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c, blood_glucose]], 
+# Create DataFrame (Match Model's Expected Input Format)
+input_df = pd.DataFrame([[age, hypertension, heart_disease, smoking_history, bmi, hba1c, 
+                          blood_glucose, gender_male, gender_other]], 
                         columns=feature_names)
 
 # Debugging: Check Feature Mismatch
